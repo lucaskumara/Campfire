@@ -14,6 +14,7 @@ if __name__ == "__main__":
         token=config.get("BOT", "TOKEN"),
         prefix=lightbulb.when_mentioned_or(["campfire ", "camp "]),
         help_class=HelpCommand,
+        help_slash_command=True,
     )
 
     bot.load_extensions_from("./extensions")
