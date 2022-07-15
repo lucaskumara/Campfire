@@ -3,11 +3,14 @@ import lightbulb
 import typing
 
 from datetime import datetime, timezone
+from collections import namedtuple
 
 
 INFO_EMBED_COLOUR = hikari.Colour(0xE67E22)
 ERROR_EMBED_COLOUR = None  # hikari.Colour(0xE74C3C)
 ERROR_DELETE_DELAY = 10
+
+EmbedField = namedtuple("EmbedField", ["name", "description", "inline"])
 
 
 def create_info_embed(title: str, description: str, icon: hikari.URL) -> hikari.Embed:
@@ -35,7 +38,7 @@ def create_info_embed(title: str, description: str, icon: hikari.URL) -> hikari.
 
 
 async def info_response(
-    context: lightbulb.Context, title: str, description: str
+    context: lightbulb.Context, title: str, description: str, fields: list = []
 ) -> None:
     """Creates an info response and sends it via the passed in context.
 
@@ -49,6 +52,9 @@ async def info_response(
     """
     bot_avatar_url = context.app.get_me().avatar_url
     info_embed = create_info_embed(title, description, bot_avatar_url)
+
+    for field in fields:
+        info_embed.add_field(field.name, field.description, inline=field.inline)
 
     await context.respond(embed=info_embed)
 
@@ -75,7 +81,9 @@ def create_error_embed(description: str, icon: str) -> hikari.Embed:
     return embed
 
 
-async def error_response(context: lightbulb.Context, description: str) -> None:
+async def error_response(
+    context: lightbulb.Context, description: str, fields: list = []
+) -> None:
     """Creates an error response and sends it via the passed in context.
 
     Arguments:
@@ -87,6 +95,9 @@ async def error_response(context: lightbulb.Context, description: str) -> None:
     """
     bot_avatar_url = context.app.get_me().avatar_url
     error_embed = create_error_embed(description, bot_avatar_url)
+
+    for field in fields:
+        error_embed.add_field(field.name, field.description, inline=field.inline)
 
     await context.respond(embed=error_embed, delete_after=ERROR_DELETE_DELAY)
 
